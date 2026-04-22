@@ -466,12 +466,38 @@ const Spark = ({
   w = 120,
   fill
 }) => {
-  const min = Math.min(...data),
-    max = Math.max(...data);
+  const series = Array.isArray(data) ? data.filter(v => Number.isFinite(v)) : [];
+  if (series.length === 0) return null;
+  if (series.length === 1) {
+    const y = h / 2;
+    const x = w - 8;
+    return /*#__PURE__*/React.createElement("svg", {
+      width: w,
+      height: h,
+      style: {
+        display: 'block'
+      }
+    }, /*#__PURE__*/React.createElement("path", {
+      d: `M4,${y} L${w - 4},${y}`,
+      stroke: color,
+      strokeWidth: "1.5",
+      fill: "none",
+      strokeLinecap: "round",
+      opacity: ".35"
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: x,
+      cy: y,
+      r: "2.2",
+      fill: color
+    }));
+  }
+  const min = Math.min(...series),
+    max = Math.max(...series);
   const r = max - min || 1;
-  const pts = data.map((v, i) => `${i / (data.length - 1) * w},${h - (v - min) / r * (h - 4) - 2}`);
+  const pts = series.map((v, i) => `${i / (series.length - 1) * w},${h - (v - min) / r * (h - 4) - 2}`);
   const path = 'M' + pts.join(' L');
   const area = `${path} L${w},${h} L0,${h} Z`;
+  const [lastX, lastY] = pts[pts.length - 1].split(',');
   return /*#__PURE__*/React.createElement("svg", {
     width: w,
     height: h,
@@ -490,8 +516,8 @@ const Spark = ({
     strokeLinecap: "round",
     strokeLinejoin: "round"
   }), /*#__PURE__*/React.createElement("circle", {
-    cx: pts[pts.length - 1].split(',')[0],
-    cy: pts[pts.length - 1].split(',')[1],
+    cx: lastX,
+    cy: lastY,
     r: "2.2",
     fill: color
   }));

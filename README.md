@@ -4,7 +4,7 @@
 
 [![Live Demo](https://img.shields.io/badge/live-demo-6366F1?style=for-the-badge&logo=github)](https://chainxgate.github.io/auto-trade-vibe/)
 [![Updated Hourly](https://img.shields.io/badge/updated-hourly-10B981?style=for-the-badge)](./data/_meta.json)
-[![YouTube Live](https://img.shields.io/badge/youtube-live-FF0000?style=for-the-badge&logo=youtube)](https://youtube.com/live/T4g7hhfH1TQ?feature=share)
+[![YouTube Live](https://img.shields.io/badge/youtube-live-FF0000?style=for-the-badge&logo=youtube)](https://www.youtube.com/live/VeIvZBVDw4Y)
 
 ---
 
@@ -37,7 +37,7 @@
 
 ## 🎥 Watch Live
 
-[Join our YouTube live stream](https://youtube.com/live/T4g7hhfH1TQ?feature=share) — see the engine run in real time, ask questions, watch positions evolve.
+[Join our YouTube live stream](https://www.youtube.com/live/VeIvZBVDw4Y) — see the engine run in real time, ask questions, watch positions evolve.
 
 ## 🔒 Premium Modules
 
@@ -75,7 +75,7 @@ Every component is observable on the live dashboard. Data shown here is anonymiz
 
 ## 📬 Get Involved
 
-- 🎥 [YouTube Live](https://youtube.com/live/T4g7hhfH1TQ?feature=share) — main channel for live demos
+- 🎥 [YouTube Live](https://www.youtube.com/live/VeIvZBVDw4Y) — main channel for live demos
 - 🌐 [Live Dashboard](https://chainxgate.github.io/auto-trade-vibe/)
 - ⭐ **Star this repo** to follow updates
 
