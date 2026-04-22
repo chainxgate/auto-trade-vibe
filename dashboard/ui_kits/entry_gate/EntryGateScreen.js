@@ -404,11 +404,20 @@ const useLiveScanner = (rate = 4000) => {
   const fetchOnce = React.useCallback(() => {
     fetch('./data/scanner.json').then(r => r.json()).then(j => {
       const scannerRows = Array.isArray(j?.scanner) ? j.scanner : [];
-      const currentCounts = {
-        scanning: scannerRows.length,
-        pass: scannerRows.filter(x => String(x?.verdict || '').toUpperCase() === 'PASS').length,
-        watch: scannerRows.filter(x => String(x?.verdict || '').toUpperCase() === 'WATCH').length,
-        reject: scannerRows.filter(x => String(x?.verdict || '').toUpperCase() === 'REJECT').length
+      const nextSeriesRaw = j?.today_series || {};
+      const nextSeries = {
+        scanning: Array.isArray(nextSeriesRaw.scanning) ? nextSeriesRaw.scanning.filter(Number.isFinite).slice(-20) : [],
+        pass: Array.isArray(nextSeriesRaw.pass) ? nextSeriesRaw.pass.filter(Number.isFinite).slice(-20) : [],
+        watch: Array.isArray(nextSeriesRaw.watch) ? nextSeriesRaw.watch.filter(Number.isFinite).slice(-20) : [],
+        reject: Array.isArray(nextSeriesRaw.reject) ? nextSeriesRaw.reject.filter(Number.isFinite).slice(-20) : []
+      };
+      const pctDelta = series => {
+        if (!Array.isArray(series) || series.length < 2) return null;
+        const curr = Number(series[series.length - 1]);
+        const prev = Number(series[0]);
+        if (!Number.isFinite(curr) || !Number.isFinite(prev)) return null;
+        if (prev === 0) return curr === 0 ? 0 : 100;
+        return (curr - prev) / Math.abs(prev) * 100;
       };
       setRaw(scannerRows);
       setTodayCounts({
@@ -417,25 +426,20 @@ const useLiveScanner = (rate = 4000) => {
         watch: Number(j?.today_counts?.watch) || 0,
         reject: Number(j?.today_counts?.reject) || 0
       });
-      setKpiHistory(prev => {
-        const next = {
-          scanning: [...prev.scanning, currentCounts.scanning].slice(-20),
-          pass: [...prev.pass, currentCounts.pass].slice(-20),
-          watch: [...prev.watch, currentCounts.watch].slice(-20),
-          reject: [...prev.reject, currentCounts.reject].slice(-20)
-        };
-        const pctDelta = (curr, prevVal) => {
-          if (prevVal == null) return null;
-          if (prevVal === 0) return curr === 0 ? 0 : 100;
-          return (curr - prevVal) / Math.abs(prevVal) * 100;
+      setKpiHistory(() => {
+        const fallbackSeries = {
+          scanning: nextSeries.scanning.length ? nextSeries.scanning : [Number(j?.today_counts?.scanning) || 0],
+          pass: nextSeries.pass.length ? nextSeries.pass : [Number(j?.today_counts?.pass) || 0],
+          watch: nextSeries.watch.length ? nextSeries.watch : [Number(j?.today_counts?.watch) || 0],
+          reject: nextSeries.reject.length ? nextSeries.reject : [Number(j?.today_counts?.reject) || 0]
         };
         setKpiDelta({
-          scanning: pctDelta(currentCounts.scanning, prev.scanning[prev.scanning.length - 1]),
-          pass: pctDelta(currentCounts.pass, prev.pass[prev.pass.length - 1]),
-          watch: pctDelta(currentCounts.watch, prev.watch[prev.watch.length - 1]),
-          reject: pctDelta(currentCounts.reject, prev.reject[prev.reject.length - 1])
+          scanning: pctDelta(fallbackSeries.scanning),
+          pass: pctDelta(fallbackSeries.pass),
+          watch: pctDelta(fallbackSeries.watch),
+          reject: pctDelta(fallbackSeries.reject)
         });
-        return next;
+        return fallbackSeries;
       });
     }).catch(() => {});
   }, []);
